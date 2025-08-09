@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres
+    container_name: postgres_container
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=admin
+    volumes:
+      - ./docker/postgres:/var/lib/postgresql/data
+    ports:
+      - "6543:5432"
+    networks:
+      - express_networks
+
+  redis:
+    image: redis
+    container_name: redis_container
+    restart: always
+    volumes:
+      - ./docker/redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - express_networks
+
+networks:
+  express_networks:
