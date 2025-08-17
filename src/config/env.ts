@@ -15,3 +15,5 @@ export const MAIL_USER = process.env.MAIL_USER;
 export const MAIL_PASSWORD = process.env.MAIL_PASSWORD;
 
 export const JWT_SECRET = process.env.JWT_SECRET;
+
+export const XENDIT_SECRET_KEY = process.env.XENDIT_SECRET_KEY;

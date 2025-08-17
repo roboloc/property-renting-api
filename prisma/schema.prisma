@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  // directUrl = env("DIRECT_URL")
 }
 
 model Sample {
@@ -16,4 +16,173 @@ model Sample {
   updatedAt DateTime @updatedAt
 
   @@map("samples")
+}
+
+model User{
+  id  Int @id @default(autoincrement())
+  email String @unique
+  password String
+  firstName String
+  lastName String
+  profilePic String?
+  role Role 
+  provider Provider
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenants Tenant[]
+  transactions Transaction[]
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  TENANT
+}
+
+enum Provider {
+  GOOGLE
+  CREDENTIALS
+}
+
+
+model Tenant{
+  id Int @id @default(autoincrement())
+  name String
+  profilePic String?
+  phone Int?
+  userId Int @unique
+  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tenants")
+}
+
+
+model Properties{
+  id Int @id @default(autoincrement())
+  slug String @unique
+  title String
+  description String
+  category Category
+  latitute Float
+  longtitude Float
+  status Status
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  rooms Room[]
+  propertyFacilities Property_Facilities[]
+
+  @@map("properties")
+}
+
+enum Category {
+  HOUSE
+  APARTMENT
+  HOTEL
+}
+
+enum Status {
+  PUBLISHED 
+  DRAFT 
+}
+
+model Property_Facilities{
+  id Int @id @default(autoincrement())
+  title String
+  propertyId Int
+  property Properties @relation(fields: [propertyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("property_facilities")
+}
+
+model Room {
+  id Int @id @default(autoincrement())
+  name String
+  stock Int
+  price Int
+  propertyId Int
+  property Properties @relation(fields: [propertyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  roomImages RoomImage[]
+  roomRates Seasonal_Rates[]
+  roomNonAvailability Property_Non_Availability[]
+  roomFacilities Room_Facilites[]
+  transactions Transaction[]
+
+  @@map("rooms")
+}
+
+model RoomImage{
+  id Int @id @default(autoincrement())
+  url String
+  roomId Int
+  room Room @relation(fields: [roomId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("room_images")
+}
+
+model Room_Facilites{
+  id Int @id @default (autoincrement())
+  title String
+  roomId Int
+  room Room @relation(fields: [roomId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Seasonal_Rates{
+  id Int @id @default (autoincrement())
+  price Int
+  date DateTime
+  roomId Int
+  room Room @relation(fields: [roomId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("seasonal_rates")
+}
+
+model Property_Non_Availability{
+  id Int @id @default(autoincrement())
+  date DateTime
+  roomId Int
+  room Room @relation(fields: [roomId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("property_non_availability")
+}
+
+model Transaction{
+  id Int @id @default(autoincrement())
+  uuid String @unique @default(uuid())
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  roomId Int
+  room Room @relation(fields: [roomId], references: [id])
+  status Transaction_Status
+  startDate DateTime
+  endDate DateTime
+  paymentProof String?
+  total Int
+  expiredAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transactions")
+}
+
+enum Transaction_Status {
+  WAITING_FOR_PAYMENT
+  WAITING_FOR_CONFIRMATION
+  PAID
+  REJECTED
+  EXPIRED
 }
