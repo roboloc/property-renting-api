@@ -5,16 +5,29 @@ import {
   IsStrongPassword,
 } from "class-validator";
 
-export class RegisterDTO {
-  @IsNotEmpty()
-  @IsString()
-  name!: string;
+import { Role } from "../../../generated/prisma";
+import { Provider } from "../../../generated/prisma";
 
+export class RegisterDTO {
   @IsNotEmpty()
   @IsEmail()
   email!: string;
 
   @IsNotEmpty()
+  @IsString()
+  firstName!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName!: string;
+
+  @IsNotEmpty()
   @IsStrongPassword()
   password!: string;
+
+  @IsNotEmpty()
+  role!: Role;
+
+  @IsNotEmpty()
+  provider!: Provider;
 }
