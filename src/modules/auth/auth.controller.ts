@@ -11,6 +11,7 @@ export class AuthController {
   login = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await this.authService.login(req.body);
+      // console.log("result:", result);
       res.status(200).send(result);
     } catch (error) {
       next(error);

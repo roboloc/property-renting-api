@@ -1,9 +1,45 @@
+// import { NextFunction, Request, Response } from "express";
+// import { verify } from "jsonwebtoken";
+// import { ApiError } from "../utils/api-error";
+
+// interface JwtPayload {
+//   id: number;
+//   role: string; // Include role in the payload
+// }
+
+// export class JwtMiddleware {
+//   verifyToken = (secretKey: string) => {
+//     return (req: Request, res: Response, next: NextFunction) => {
+//       const token = req.headers.authorization?.split(" ")[1];
+
+//       if (!token) {
+//         throw new ApiError("No Token Provided", 401);
+//       }
+
+//       verify(token, secretKey, (err, payload) => {
+//         if (err) {
+//           throw new ApiError("Invalid token or token expired", 401);
+//         }
+//         res.locals.user = payload as JwtPayload;
+//         console.log("JWT payload:", payload);
+//         // payload berisi id dan user
+//         next();
+//       });
+
+//       //pastikan secret key yang digunakan berbeda dengan yang di login
+
+//       //Bearer access_key
+//     };
+//   };
+// }
+
 import { NextFunction, Request, Response } from "express";
-import { verify } from "jsonwebtoken";
+import { verify, JwtPayload as DefaultPayload } from "jsonwebtoken";
 import { ApiError } from "../utils/api-error";
 
-interface JwtPayload {
+interface JwtPayload extends DefaultPayload {
   id: number;
+  role: string; // wajib ada
 }
 
 export class JwtMiddleware {
@@ -16,17 +52,16 @@ export class JwtMiddleware {
       }
 
       verify(token, secretKey, (err, payload) => {
-        if (err) {
+        if (err || !payload) {
           throw new ApiError("Invalid token or token expired", 401);
         }
-        res.locals.user = payload as JwtPayload;
-        // payload berisi id dan user
+
+        const userPayload = payload as JwtPayload;
+
+        res.locals.user = userPayload;
+        // console.log("✅ JWT payload:", userPayload);
         next();
       });
-
-      //pastikan secret key yang digunakan berbeda dengan yang di login
-
-      //Bearer access_key
     };
   };
 }

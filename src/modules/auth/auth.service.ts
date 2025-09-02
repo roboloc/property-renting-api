@@ -21,12 +21,7 @@ export class AuthService {
     this.mailService = new MailService();
   }
 
-  login = async (
-    body: Pick<
-      User,
-      "email" | "firstName" | "lastName" | "password" | "role" | "provider"
-    >
-  ) => {
+  login = async (body: Pick<User, "email" | "password" | "role">) => {
     // cek dulu emailnya ada ga di database
     // kalau ga ada throw error
     // kalau ada cek passwordnya valid atau tidak
@@ -54,9 +49,13 @@ export class AuthService {
     const accessToken = this.tokenService.generateToken(
       {
         id: user.id,
+        role: user.role,
       },
       JWT_SECRET!
     );
+
+    console.log("Generated token payload:", { id: user.id, role: user.role });
+    console.log("Access token:", accessToken);
 
     const { password, ...userWithoutPassword } = user;
 
