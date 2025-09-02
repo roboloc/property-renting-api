@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import express, { Express } from "express";
 import cors from "cors";
 import { errorMiddleware } from "./middlewares/error.middleware";
@@ -5,6 +6,7 @@ import { PORT } from "./config/env";
 import { SampleRouter } from "./modules/sample/sample.router";
 import { XenditRouter } from "./modules/xendit/xendit.router";
 import { AuthRouter } from "./modules/auth/auth.router";
+import { TransactionRouter } from "./modules/transaction/transaction.router";
 
 export class App {
   app: Express;
@@ -28,9 +30,11 @@ export class App {
     const sampleRouter = new SampleRouter();
     const xenditRouter = new XenditRouter();
     const authRouter = new AuthRouter();
+    const transactionRouter = new TransactionRouter();
 
     this.app.use("/samples", sampleRouter.getRouter());
     this.app.use("/auth", authRouter.getRouter());
+    this.app.use("/transactions", transactionRouter.getRouter());
     this.app.use("/xendit", xenditRouter.getRouter());
   }
 
